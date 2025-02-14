@@ -11,10 +11,12 @@
 #define INIT_MODE_KEY KEY_I
 #define WIDTH 1500
 #define HEIGHT 1125
+#define SCENE_SCALE 40
 
 void draw_fps(Font font);
-void draw_3d_plane(Camera camera, int grid_lines);
+void draw_3d_plane(Camera camera, int grid_lines, Model model, Vector3 map_pos);
 void draw_camera_info(Camera camera, int camera_mode, int pro_mode);
 void handle_camera_modes(Camera* camera, int* camera_mode, int* pro_mode);
+void update_camera(int mode, Camera* camera, int camera_mode);
 
 #endif // GRAPHICS_H
