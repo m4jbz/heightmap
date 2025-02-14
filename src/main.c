@@ -1,39 +1,56 @@
 #include <raylib.h>
 #include <stdlib.h>
 #include <stdio.h>
-
-#define BG_COLOR (Color) {18, 18, 18, 255}
-#define WIDTH 1500
-#define HEIGHT 1125
-
-void draw_fps(Font font)
-{
-    Vector2 position = {10.0f, 10.0f};
-    char message[16];
-    sprintf(message, "%d\n", GetFPS());
-    DrawTextEx(font, message, position, font.baseSize*4.0f, 2.0f, RAYWHITE);
-}
+#include "graphics.h"
 
 int main(void)
 {
-    // start drawing
     InitWindow(WIDTH, HEIGHT, "heightmap");
-    SetTargetFPS(60);
 
     Font font;
-    font = LoadFont("assets/romulus.png");
+    font = LoadFont(FONT);
+    Camera camera = { 0 };
+    camera.position = (Vector3) {20.0f, 10.0f, 0.0f};
+    camera.target = (Vector3) {0.0f, 0.0f, 0.0f};
+    camera.up = (Vector3) {0.0f, 1.0f, 0.0f};
+    camera.fovy = 50.0f;
+    camera.projection = CAMERA_PERSPECTIVE;
+    int camera_mode = CAMERA_ORBITAL;
+    int pro_mode = 0;
 
+    // this is magic, it keeps locked the cursor inside the window
+    DisableCursor();
+    SetTargetFPS(60);
+
+    // game loop
     while (!WindowShouldClose()) {
-        BeginDrawing();
-        ClearBackground(BG_COLOR);
-        draw_fps(font);
+        if (pro_mode) {
+            UpdateCameraPro(&camera,
+                (Vector3){(IsKeyDown(KEY_W))*0.4f - (IsKeyDown(KEY_S))*0.4f,
+                          (IsKeyDown(KEY_D))*0.4f - (IsKeyDown(KEY_A))*0.4f,
+                          (IsKeyDown(KEY_SPACE))*0.4f - (IsKeyDown(KEY_LEFT_SHIFT))*0.4f},
+                (Vector3){GetMouseDelta().x*(0.05f),
+                          GetMouseDelta().y*(0.05f),
+                          0.0f},
+                GetMouseWheelMove()*2.0f);
+        } else {
+            UpdateCamera(&camera, camera_mode);
+        }
 
+        handle_camera_modes(&camera, &camera_mode, &pro_mode);
+
+        BeginDrawing();
+            ClearBackground(BG_COLOR);
+
+            draw_3d_plane(camera, 20);
+            draw_fps(font);
+
+            draw_camera_info(camera, camera_mode, pro_mode);
 
         EndDrawing();
     }
 
     UnloadFont(font);
-    // end drawing
     CloseWindow();
 
     return 0;
