@@ -73,6 +73,7 @@ void handle_camera_modes(Camera* camera, int* camera_mode, int* mode)
         *mode = 0;
     }
 
+    // goes back to the init camera initialization
     if (IsKeyPressed(INIT_MODE_KEY)) {
         *camera_mode = CAMERA_ORBITAL;
         camera->position = (Vector3) {(float)SCENE_SCALE, 10.0f, 0.0f};
